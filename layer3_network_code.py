@@ -6,6 +6,13 @@ from mininet.cli import CLI
 
 
 def create_network():
+    """
+    creates the network the following network topology:
+    The IP address space is 20.10.172.0—20.10.172.255
+    LAN A: 20.10.172.128/26 supports atleast 50 hosts
+    LAN B: 20.10.172.0/25 supports at least 75 hosts
+    LAN C: 20.10.172.192/27 supports at least 20 hosts
+    """
     net = Mininet(controller=OVSController, link=TCLink)
     net.addController("c0")
 
@@ -46,15 +53,66 @@ def create_network():
 
     net.addLink(routerA, transition_switch, intfName1="routerA-eth0",
                 params1={"ip": "20.10.172.225/27"})
+    net.addLink(routerA, switchA, intfName1="routerA-eth1",
+                params1={"ip": "20.10.172.129/26"})
+
     net.addLink(routerB, transition_switch, intfName1="routerB-eth0",
                 params1={"ip": "20.10.172.226/27"})
+    net.addLink(routerB, switchB, intfName1="routerB-eth1",
+                params1={"ip": "20.10.172.1/25"})
+
     net.addLink(routerC, transition_switch, intfName1="routerC-eth0",
                 params1={"ip": "20.10.172.227/27"})
+    net.addLink(routerC, switchC, intfName1="routerC-eth1",
+                params1={"ip": "20.10.172.193/27"})
 
     # enables forwarding and starts the network
     net.start()
     for router in [routerA, routerB, routerC]:
         router.cmd("sysctl -w net.ipv4.ip_forward=1")
+
+    # links hosts from different LANs
+    # LAN A to LAN B
+    routerA.cmd("ip route add 20.10.172.0/25 via 20.10.172.226")
+    # LAN A to LAN C
+    routerA.cmd("ip route add 20.10.172.192/27 via 20.10.172.227")
+
+    # LAN B to LAN A
+    routerB.cmd("ip route add 20.10.172.128/26 via 20.10.172.225")
+    # LAN B to LAN C
+    routerB.cmd("ip route add 20.10.172.192/27 via 20.10.172.227")
+
+    # LAN C to LAN A
+    routerC.cmd("ip route add 20.10.172.128/26 via 20.10.172.225")
+    # LAN C to LAN B
+    routerC.cmd("ip route add 20.10.172.0/25 via 20.10.172.226")
+
+    hostA1.cmd(
+        "sudo route add -net 20.10.172.0 netmask 255.255.255.128 gw 20.10.172.129")
+    hostA1.cmd(
+        "sudo route add -net 20.10.172.192 netmask 255.255.255.224 gw 20.10.172.129")
+    hostA2.cmd(
+        "sudo route add -net 20.10.172.0 netmask 255.255.255.128 gw 20.10.172.129")
+    hostA2.cmd(
+        "sudo route add -net 20.10.172.192 netmask 255.255.255.224 gw 20.10.172.129")
+
+    hostB1.cmd(
+        "sudo route add -net 20.10.172.128 netmask 255.255.255.192 gw 20.10.172.1")
+    hostB1.cmd(
+        "sudo route add -net 20.10.172.192 netmask 255.255.255.224 gw 20.10.172.1")
+    hostB2.cmd(
+        "sudo route add -net 20.10.172.128 netmask 255.255.255.192 gw 20.10.172.1")
+    hostB2.cmd(
+        "sudo route add -net 20.10.172.192 netmask 255.255.255.224 gw 20.10.172.1")
+
+    hostC1.cmd(
+        "sudo route add -net 20.10.172.128 netmask 255.255.255.192 gw 20.10.172.193")
+    hostC1.cmd(
+        "sudo route add -net 20.10.172.0 netmask 255.255.255.128 gw 20.10.172.193")
+    hostC2.cmd(
+        "sudo route add -net 20.10.172.128 netmask 255.255.255.192 gw 20.10.172.193")
+    hostC2.cmd(
+        "sudo route add -net 20.10.172.0 netmask 255.255.255.128 gw 20.10.172.193")
 
     CLI(net)
 
