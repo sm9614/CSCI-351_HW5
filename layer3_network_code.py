@@ -113,7 +113,15 @@ def create_network():
         "sudo route add -net 20.10.172.128 netmask 255.255.255.192 gw 20.10.172.193")
     hostC2.cmd(
         "sudo route add -net 20.10.172.0 netmask 255.255.255.128 gw 20.10.172.193")
-
+    
+    print("\nNetwork CLI")
+    print("hosts in LAN A: hostA1, hostA2")
+    print("hosts in LAN B: hostB1, hostB2")
+    print("hosts in LAN C: hostC1, hostC2")
+    print("commands to test network")
+    print("pingall")
+    print("<host> ping <host>")
+    print("<host> traceroute <host>")
     CLI(net)
 
     # disble forwarding and stops network
