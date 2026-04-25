@@ -8,7 +8,7 @@ from mininet.cli import CLI
 def create_network():
     """
     creates the network the following network topology:
-    The IP address space is 20.10.172.0—20.10.172.255
+    The IP address space is 20.10.172.0 - 20.10.172.255
     LAN A: 20.10.172.128/26 supports atleast 50 hosts
     LAN B: 20.10.172.0/25 supports at least 75 hosts
     LAN C: 20.10.172.192/27 supports at least 20 hosts

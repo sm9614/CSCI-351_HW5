@@ -1,0 +1,10 @@
+astroid==1.4.4
+lazy-object-proxy==1.2.1
+logilab-common==1.1.0
+mininet==2.3.0
+pexpect==4.0.1
+ptyprocess==0.5
+pyflakes==1.1.0
+pylint==1.5.2
+six==1.10.0
+wrapt==1.8.0
